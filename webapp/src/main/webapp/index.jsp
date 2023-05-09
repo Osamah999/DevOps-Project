@@ -26,7 +26,7 @@
     <!-- Start Header -->
     <div class="header" id="header">
         <div class="container">
-            <a href="#" class="logo">Osamah</a>
+            <a href="#" class="logo">Osamah Alhammadi</a>
             <ul class="main-nav">
                 <li><a href="#articles">Articles</a></li>
                 <li><a href="#gallery">Gallery</a></li>
