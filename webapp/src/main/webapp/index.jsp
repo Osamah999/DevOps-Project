@@ -51,7 +51,7 @@
           <!-- Green highlight effect -->
           <span class="highlight">banking</span>
           meets<br />
-          <span class="highlight">minimalist</span>
+          <span class="highlight">Hi I'm Osamah</span>
         </h1>
         <h4>A simpler banking experience for a simpler life.</h4>
         <button class="btn--text btn--scroll-to">Learn more &DownArrow;</button>
