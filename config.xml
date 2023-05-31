@@ -1,0 +1,63 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1292.v27d8cc3e2602">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2131.vb_9788088fdb_5"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2131.vb_9788088fdb_5">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description>Build code with the help of maven on pipeline and deploy it on docker</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers/>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3659.v582dc37621d8">
+    <script>pipeline {
+    agent any
+    tools {
+      maven &apos;maven-3.9.1&apos;
+    }
+
+    stages {
+            stage(&apos;GitHub&apos;) {
+                steps{
+                    git branch: &apos;main&apos;, 
+                        credentialsId: &apos;github&apos;, 
+                        url: &apos;https://github.com/Osamah999/DevOps-Project.git&apos;
+                }      
+            }
+            stage(&apos;Build Code&apos;){
+               steps{
+                    sh &quot;mvn clean install&quot;
+                } 
+            }
+            stage(&apos;SSH Con&apos;){
+               steps{
+                    sshagent([&apos;deploy_user1&apos;]) {
+                    // some block
+                    sh &quot;scp -o StrictHostKeyChecking=no webapp/target/webapp.war ansadmin@ec2-13-127-156-134.ap-south-1.compute.amazonaws.com:/opt/docker&quot;
+                    }
+                } 
+            }
+            stage(&apos;Push Code&apos;){
+               steps{
+                    ansiblePlaybook becomeUser: &apos;ansadmin&apos;, credentialsId: &apos;deploy_user1&apos;, installation: &apos;Ansible&apos;, inventory: &apos;/etc/ansible/hosts&apos;, playbook: &apos;/opt/docker/regapp.yml&apos;, sudoUser: &apos;ansadmin&apos;
+                } 
+            }
+            stage(&apos;Deploy Code&apos;){
+               steps{
+                    ansiblePlaybook becomeUser: &apos;ansadmin&apos;, credentialsId: &apos;deploy_user1&apos;, installation: &apos;Ansible&apos;, inventory: &apos;/etc/ansible/hosts&apos;, playbook: &apos;/opt/docker/deploy_regapp.yml&apos;, sudoUser: &apos;ansadmin&apos;
+                } 
+            }
+            
+        }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
